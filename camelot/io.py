@@ -105,3 +105,21 @@ def read_pdf(filepath, pages='1', password=None, flavor='lattice',
         tables = p.parse(flavor=flavor, suppress_stdout=suppress_stdout,
                          layout_kwargs=layout_kwargs, **kwargs)
         return tables
+
+
+def read_fileObj(fileObj, pages='1', password=None, flavor='lattice', suppress_stdout=False, layout_kwargs={},
+                 **kwargs):
+    if flavor not in ['lattice', 'stream']:
+        raise NotImplementedError("Unknown flavor specified."
+                                  " Use either 'lattice' or 'stream'")
+
+    with warnings.catch_warnings():
+        if suppress_stdout:
+            warnings.simplefilter("ignore")
+
+        validate_input(kwargs, flavor=flavor)
+        p = PDFHandler(fileObj=fileObj, pages=pages, password=password)
+        kwargs = remove_extra(kwargs, flavor=flavor)
+        tables = p.parse(flavor=flavor, suppress_stdout=suppress_stdout,
+                         layout_kwargs=layout_kwargs, **kwargs)
+        return tables
